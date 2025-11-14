@@ -75,14 +75,21 @@ def main():
 
 	parser.add_argument("-P", "--precalcualted_score_file", type = str,help="Path to precalulated scorefile to read scores from for faster rerunning of EPIC. default = None",
 						default="NONE")
+	
+	#MG mods
+	parser.add_argument("-lb", "--min_complex_members", type = int,help="Minimum number of members in reference complex to be considered a valid complex for training. default = 3",
+						default=3)
+	parser.add_argument("-ub", "--max_complex_members", type = int,help="Maximum number of members in reference complex to be considered a valid complex for training. default = 50",
+						default=50)
+	parser.add_argument("-oc", "--overlap_cutoff", type = float,help="Complex overlap cutoff. default = 0.8",
+						default=0.8)
 
 	args = parser.parse_args()
 
 	args.mode = args.mode.upper()
 	args.fun_anno_source = args.fun_anno_source.upper()
-
 	#Create feature combination
- 	if args.feature_selection == "00000000":
+	if args.feature_selection == "00000000":
 		print "Select at least one feature"
 		sys.exit()
 
@@ -97,6 +104,11 @@ def main():
  	foundprots, elution_datas = utils.load_data(args.input_dir, this_scores, fc=args.frac_count, mfc=args.elution_max_count)
 
 	# Generate reference data set
+
+	# MG edit: set Cluster class parameters
+	cluster_config = {"lb": args.min_complex_members,"ub": args.max_complex_members,"overlap_cutoff": args.overlap_cutoff}
+	GS.cluster_config.update(cluster_config)
+
 	gs = ""
 	if ((args.taxid != "" and  args.ppi != "") or (args.cluster != "" and  args.ppi != "" )):
 		print "Refernce from cluster and PPI are nor compatiple. Please supply ppi or complex reference, not both!"
@@ -119,7 +131,7 @@ def main():
 			gs_clusters.append(GS.FileClusters(args.cluster, foundprots))
 
 	if args.ppi != "":
-		print "Reading PPI file from %s" % args.reference
+		print "Reading PPI file from %s" % args.ppi
 		gs = Goldstandard_from_PPI_File(args.ppi, foundprots)
 
 

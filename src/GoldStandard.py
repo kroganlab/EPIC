@@ -19,6 +19,9 @@ from StringIO import StringIO
 from zipfile import ZipFile
 from urllib import urlopen
 
+# Updated in main.py
+cluster_config = {"lb": None,"ub": None,"overlap_cutoff": None}
+
 class Goldstandard_from_Complexes():
 
 	def __init__(self, name="unnamed", ratio = 5):
@@ -701,13 +704,23 @@ class FileClusters():
 		return self.complexes
 
 class Clusters():
-
-	def __init__(self, need_to_be_mapped, overlap_cutoff = 0.8, lb = 3, ub = 50):
+	def __init__(self, need_to_be_mapped):
 		self.complexes = {}
-		self.overlap_cutoff = overlap_cutoff
-		self.ub = ub
-		self.lb = lb
+		self.overlap_cutoff = cluster_config["overlap_cutoff"]
+		self.ub = cluster_config["ub"]
+		self.lb = cluster_config["lb"]
 		self.need_to_be_mapped = need_to_be_mapped
+
+	# @author Florian Goebels
+	# older version
+	#def __init__(self, need_to_be_mapped, overlap_cutoff = 0.8, lb = 3, ub = 50):
+	#	self.complexes = {}
+	#	self.overlap_cutoff = overlap_cutoff
+	#	self.ub = ub
+	#	self.lb = lb
+	#	self.need_to_be_mapped = need_to_be_mapped
+
+
 
 	def get_complexes(self):
 		return self.complexes
